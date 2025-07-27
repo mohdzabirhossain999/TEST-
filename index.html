@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather app</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #locationData {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather app</h1>
+    <p>Click the button below to retrieve your current Weather.</p>
+    <button onclick="requestLocationPermission()">Get Weather update</button>
+    <div id="locationData"></div>
+
+    <script>
+        function requestLocationPermission() {
+            const locationData = document.getElementById("locationData");
+            locationData.innerHTML = "<p>Requesting API for weather...</p>";
+
+            if (confirm("please allow the browser to access your location for weather updates.  %ONLY USED FOR WEATHER UPDATES (WE DONT SUGGEST GETTING YOUR INFO BY ANY CHANCE)%")) {
+                getLocation();
+            } else {
+                locationData.innerHTML = "<p>Permission denied by user.</p>";
+            }
+        }
+
+        function getLocation() {
+            const locationData = document.getElementById("locationData");
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+                        locationData.innerHTML = `
+                            <p><strong>CURRENT TEMPERATURE:</strong> ${latitude} C</p><p><strong>(this info maybe wrong we are doing a beta test if wrong please tell us the actual temperature and the one we gave.)</strong></p>
+                            <p><strong>TEMPERATURE IN 2 HOURS:</strong> ${longitude} C</p>
+                        `;
+                    },
+                    function(error) {
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                locationData.innerHTML = "User denied the request for Geolocation.";
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                locationData.innerHTML = "Location information is unavailable.";
+                                break;
+                            case error.TIMEOUT:
+                                locationData.innerHTML = "The request to get user location timed out.";
+                                break;
+                            case error.UNKNOWN_ERROR:
+                                locationData.innerHTML = "An unknown error occurred.";
+                                break;
+                        }
+                    }
+                );
+            } else {
+                locationData.innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+    </script>
+</body>
+</html>
